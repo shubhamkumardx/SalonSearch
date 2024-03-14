@@ -4,29 +4,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import Userimage from "../../../images/Userimage.jpg";
 import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(3, "First Name at least 3 character")
-    .max(25)
-    .matches(/^[A-Z][a-zA-Z]*$/, "1st word must be alphabet capital letter")
-    .required("Please  enter your service name"),
-  description: Yup.string()
-    .max(800)
-    .matches(/^[A-Z][a-zA-Z]*$/, "1st word must be alphabet capital letter")
-    .required("Please enter description of your service"),
-
-  // is_active: Yup.boolean().required("This is required field"),
-});
-
-const initialValues = {
-  name: "",
-  description: "",
-  // is_active: "",
-};
-
+import { Dropdown } from "react-bootstrap";
 
 function Servicecreate(props) {
   const [active, IsActive] = useState(1);
@@ -35,16 +13,40 @@ function Servicecreate(props) {
     description: "",
     checkbox: false,
   });
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [is_active, setis_active] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    let errors = {};
+    const regex = /^[A-Za-z]+$/;
+    if (!name.trim()) {
+      errors.name = "Name is required.";
+    }
+    if (!description.trim()) {
+      errors.description = "Description is required.";
+    }
+    // if (!isChecked) {
+    //   errors.checkbox = "Checkbox must be checked.";
+    // }
+    return errors;
+  };
+
+  const handleSubmittt = (e) => {
+    e.preventDefault();
+    const errors = validate();
+    if (Object.keys(errors).length === 0) {
+      // Form is valid, submit data
+      // console.log("Submitting:", { name, description, isChecked });
+      CreateService({ name, description, is_active });
+    } else {
+      setErrors(errors);
+    }
+  };
 
   const handlelog = () => {
     sessionStorage.clear();
-  };
-
-
-  const handleSubmit = (values) => {
-    console.log(values);
-    alert("Form Submitted Successfully!");
-  
   };
 
   const handleInputChange = (event) => {
@@ -57,18 +59,18 @@ function Servicecreate(props) {
     });
   };
 
-  const submitFormData = (e) => {
-    e.preventDefault();
-    Createbusiness(formData);
-  };
+  // const submitFormData = (e) => {
+  //   e.preventDefault();
+  //   Createbusiness(formData);
+  // };
 
-  const Createbusiness = async (formData) => {
+  const CreateService = async ({ name, description, is_active }) => {
     const obj = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ name, description, is_active }),
     };
 
     const response = await fetch(`http://localhost:5000/servicecreate`, obj);
@@ -76,11 +78,14 @@ function Servicecreate(props) {
     if (response.ok) {
       toast.success("Created successfully");
       console.log("Created successfully");
-      setFormData({
-        name: "",
-        description: "",
-        checkbox: false,
-      });
+      // setFormData({
+      //   name: "",
+      //   description: "",
+      //   checkbox: false,
+      // });
+      setName("");
+      setDescription("");
+      // setIsChecked("");
     } else {
       console.log("Something went wrong");
     }
@@ -105,47 +110,31 @@ function Servicecreate(props) {
             <div className="col-lg-4 d-flex justify-content-end ">
               <div className="d9 d-flex">
                 <img src={Userimage} className="sizing1" />
-                <p
-                  className="mt-3 d8 dropdown-toggle"
-                  id="navbarDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+              
+
+                <Dropdown>
+                <Dropdown.Toggle
+                  as="p"
+                  variant="secondary"
+                  id="dropdown-basic"
+                  className="dro"
                 >
                   Admin
-                </p>
-
-                <ul class="dropdown-menu">
-                  <Link className="nav-link" to="/Profile">
-                    <li>
-                      <a
-                        href="/"
-                        className="link logo1 d-flex dropdown-item"
-                        // onClick={handlelog}
-                      >
-                        Profile
-                      </a>
-                    </li>
-                  </Link>
-                  <li>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="#">
                     {" "}
-                    <a
-                      href="/forgotpassword"
-                      className="link logo1 dropdown-item"
-                    >
-                      Forgot Password
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/"
-                      className="link logo1 d-flex dropdown-item"
-                      onClick={handlelog}
-                    >
-                      Logout
-                    </a>
-                  </li>
-                </ul>
+                    <Link className="nav-link" to="/Profile">
+                      {" "}
+                      Profile
+                    </Link>
+                  </Dropdown.Item>
+                  <Dropdown.Item href="#">Forgot Password</Dropdown.Item>
+                  <Dropdown.Item href="/" onClick={handlelog}>
+                    Logout
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               </div>
             </div>
           </div>
@@ -682,90 +671,79 @@ function Servicecreate(props) {
                     </form>
                   </div> */}
 
-                  <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                  >
-                    {({ dirty, isValid }) => (
-                      <Form>
-                        <div className="container">
-                        <div class="form-group">
-                          <label  htmlFor="name">Name</label>
-                          <Field
-                            type="text"
-                            className="form-control"
-                            id="name"
-                            placeholder="Enter new Service Name"
-                            name="name"
-                            // value={formData.name}
-                            // onChange={handleInputChange}
-                          />
+                  <div className="container">
+                    <form onSubmit={handleSubmittt}>
+                      <div class="form-group">
+                        <label for="exampleFormControlInput1">Name</label>
+                        <input
+                          type="name"
+                          class="form-control"
+                          id="exampleFormControlInput1"
+                          placeholder="Enter new Service Name"
+                          name="name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                        />
+                        {name.length == 0
+                          ? errors.name && (
+                              <span className="text-danger">{errors.name}</span>
+                            )
+                          : ""}
+                      </div>
 
-                          <ErrorMessage
-                            name="name"
-                            component="div"
-                            className="text-danger"
-                          />
-                        </div>
+                      <div class="form-group  mt-4">
+                        <label for="exampleFormControlTextarea1">
+                          Description
+                        </label>
+                        <textarea
+                          name="description"
+                          class="form-control"
+                          id="exampleFormControlTextarea1"
+                          rows="3"
+                          placeholder="Enter new Service description if there is"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                        ></textarea>
+                        {description.length == 0
+                          ? errors.description && (
+                              <span className="text-danger">
+                                {errors.description}
+                              </span>
+                            )
+                          : ""}
+                      </div>
 
-                        <div class="form-group  mt-4">
-                          <label htmlFor="description">
-                            Description
-                          </label>
-                          <Field
-                            as="textarea"
-                            name="description"
-                            class="form-control"
-                            id="description"
-                            rows="3"
-                            placeholder="Enter new Service description if there is"
-                            // value={formData.description}
-                            // onChange={handleInputChange}
-                          />
+                      <div class="form-check mt-3">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          value=""
+                          name="checkbox"
+                          id="flexCheckChecked"
+                          checked={is_active}
+                          onChange={(e) => setis_active(e.target.checked)}
+                        />
+                        <label class="form-check-label" for="flexCheckChecked">
+                          Active Service
+                        </label>{" "}
+                        <br />
+                        {/* {isChecked == false
+                          ? errors.checkbox && (
+                              <span className="text-danger">
+                                {errors.checkbox}
+                              </span>
+                            )
+                          : ""} */}
+                      </div>
 
-                          <ErrorMessage
-                            name="description"
-                            component="div"
-                            className="text-danger"
-                          />
-                        </div>
-
-                        <div class="form-check mt-3">
-                          <Field
-                            class="form-check-input"
-                            type="checkbox"
-                            value="is_active"
-                            name="is_active"
-                            id="flexCheckChecked"
-                            // checked={formData.checkbox}
-                            // onChange={handleInputChange}
-                          />
-                          <label class="form-check-label" htmlFor="is_active">
-                            Active Service
-                          </label>
-
-                          <ErrorMessage
-                            name="is_active"
-                            component="div"
-                            className="text-danger"
-                          />
-                        </div>
-
-                        <button
-                          type="submit"
-                          className="btn btn-primary mt-3 mb-4 btd text-white"
-                          // onSubmit={submitFormData}
-                          // onClick={submitFormData}
-                        >
-                          Create
-                        </button>
-
-                        </div>
-                      
-                      </Form>
-                    )}
-                  </Formik>
+                      <button
+                        type="submit"
+                        className="btn btn-primary mt-3 mb-4 btd text-white"
+                      >
+                        Create
+                      </button>
+                    </form>
+                  </div>
                 </div>
 
                 <br />

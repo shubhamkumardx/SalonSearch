@@ -4,9 +4,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import Userimage from "../../../images/Userimage.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-
-
-
+import { Dropdown } from "react-bootstrap";
 
 function Create(props) {
   const [active, IsActive] = useState(1);
@@ -15,7 +13,37 @@ function Create(props) {
     description: "",
     checkbox: false,
   });
-  console.log(formData);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [is_active, setis_active] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    let errors = {};
+    const regex = /^[A-Za-z]+$/;
+    if (!name.trim()) {
+      errors.name = "Name is required.";
+    }
+    if (!description.trim()) {
+      errors.description = "Description is required.";
+    }
+    // if (!isChecked) {
+    //   errors.checkbox = "Checkbox must be checked.";
+    // }
+    return errors;
+  };
+
+  const handleSubbmitt = (e) => {
+    e.preventDefault();
+    const errors = validate();
+    if (Object.keys(errors).length === 0) {
+      // Form is valid, submit data
+      // console.log("Submitting:", { name, description, isChecked });
+      Createbusiness({ name, description, is_active });
+    } else {
+      setErrors(errors);
+    }
+  };
 
   const handlelog = () => {
     sessionStorage.clear();
@@ -23,7 +51,6 @@ function Create(props) {
 
   const handleSubmit = (values) => {
     console.log(values);
-
   };
 
   const handleInputChange = (event) => {
@@ -41,19 +68,16 @@ function Create(props) {
     Createbusiness(formData);
   };
 
-  const Createbusiness = async (formData) => {
+  const Createbusiness = async ({ name, description, is_active }) => {
     const obj = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ name, description, is_active }),
     };
 
-    const response = await fetch(
-      `http://localhost:5000/create`,
-      obj
-    );
+    const response = await fetch(`http://localhost:5000/create`, obj);
     console.log(response);
     if (response.ok) {
       toast.success("Created successfully");
@@ -86,47 +110,29 @@ function Create(props) {
           <div className="col-lg-4 d-flex justify-content-end ">
             <div className="d9 d-flex">
               <img src={Userimage} className="sizing1" />
-              <p
-                className="mt-3 d8 dropdown-toggle"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Admin
-              </p>
-
-              <ul class="dropdown-menu">
-                <Link className="nav-link" to="/Profile">
-                  <li>
-                    <a
-                      href="/"
-                      className="link logo1 d-flex dropdown-item"
-                      // onClick={handlelog}
-                    >
+              <Dropdown>
+                <Dropdown.Toggle
+                  as="p"
+                  variant="secondary"
+                  id="dropdown-basic"
+                  className="dro"
+                >
+                  Admin
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="#">
+                    {" "}
+                    <Link className="nav-link" to="/Profile">
+                      {" "}
                       Profile
-                    </a>
-                  </li>
-                </Link>
-                <li>
-                  {" "}
-                  <a
-                    href="/forgotpassword"
-                    className="link logo1 dropdown-item"
-                  >
-                    Forgot Password
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/"
-                    className="link logo1 d-flex dropdown-item"
-                    onClick={handlelog}
-                  >
+                    </Link>
+                  </Dropdown.Item>
+                  <Dropdown.Item href="#">Forgot Password</Dropdown.Item>
+                  <Dropdown.Item href="/" onClick={handlelog}>
                     Logout
-                  </a>
-                </li>
-              </ul>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </div>
@@ -606,67 +612,121 @@ function Create(props) {
                 <p className="oppo">Basic Details*</p>
 
                 <div className="container">
-                
-                  
-                      <form 
-                      // onSubmit={submitFormData}
-                      >
-                        <div class="form-group">
-                          <label for="exampleFormControlInput1">Name</label>
-                          <input
-                            type="name"
-                            class="form-control"
-                            id="exampleFormControlInput1"
-                            placeholder="Enter new Business Type Name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                          />
-                        </div>
+                  {/* <form>
+                    <div class="form-group">
+                      <label for="exampleFormControlInput1">Name</label>
+                      <input
+                        type="name"
+                        class="form-control"
+                        id="exampleFormControlInput1"
+                        placeholder="Enter new Business Type Name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                      />
+                    </div>
 
-                        <div class="form-group  mt-4">
-                          <label for="exampleFormControlTextarea1">
-                            Description
-                          </label>
-                          <textarea
-                            name="description"
-                            class="form-control"
-                            id="exampleFormControlTextarea1"
-                            rows="3"
-                            placeholder="Enter new Business Type description if there is"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                          ></textarea>
-                        </div>
+                    <div class="form-group  mt-4">
+                      <label for="exampleFormControlTextarea1">
+                        Description
+                      </label>
+                      <textarea
+                        name="description"
+                        class="form-control"
+                        id="exampleFormControlTextarea1"
+                        rows="3"
+                        placeholder="Enter new Business Type description if there is"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                      ></textarea>
+                    </div>
 
-                        <div class="form-check mt-3">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="checkbox"
-                            id="flexCheckChecked"
-                            checked={formData.checkbox}
-                            onChange={handleInputChange}
-                          />
-                          <label
-                            class="form-check-label"
-                            for="flexCheckChecked"
-                          >
-                            Active Business Type
-                          </label>
-                        </div>
+                    <div class="form-check mt-3">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="checkbox"
+                        id="flexCheckChecked"
+                        checked={formData.checkbox}
+                        onChange={handleInputChange}
+                      />
+                      <label class="form-check-label" for="flexCheckChecked">
+                        Active Business Type
+                      </label>
+                    </div>
 
-                        <button
-                          type="button"
-                          className="btn btn-primary mt-3 mb-4 btd text-white"
-                          onClick={submitFormData}
-                        >
-                          Create
-                        </button>
-                        {/* <button type="submit">saveeeee</button> */}
-                      </form>
-                   
-                
+                    <button
+                      type="button"
+                      className="btn btn-primary mt-3 mb-4 btd text-white"
+                      onClick={submitFormData}
+                    >
+                      Create
+                    </button>
+                  </form> */}
+
+                  <form>
+                    <div class="form-group">
+                      <label for="exampleFormControlInput1">Name</label>
+                      <input
+                        type="name"
+                        class="form-control"
+                        id="exampleFormControlInput1"
+                        placeholder="Enter new Business Type Name"
+                        name="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                      {name.length == 0
+                        ? errors.name && (
+                            <span className="text-danger">{errors.name}</span>
+                          )
+                        : ""}
+                    </div>
+
+                    <div class="form-group  mt-4">
+                      <label for="exampleFormControlTextarea1">
+                        Description
+                      </label>
+                      <textarea
+                        name="description"
+                        class="form-control"
+                        id="exampleFormControlTextarea1"
+                        rows="3"
+                        placeholder="Enter new Business Type description if there is"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                      ></textarea>
+                      {description.length == 0
+                        ? errors.description && (
+                            <span className="text-danger">
+                              {errors.description}
+                            </span>
+                          )
+                        : ""}
+                    </div>
+
+                    <div class="form-check mt-3">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="checkbox"
+                        id="flexCheckChecked"
+                        checked={is_active}
+                        onChange={(e) => setis_active(e.target.checked)}
+                      />
+                      <label class="form-check-label" for="flexCheckChecked">
+                        Active Business Type
+                      </label>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn btn-primary mt-3 mb-4 btd text-white"
+                      onClick={handleSubbmitt}
+                    >
+                      Create
+                    </button>
+                  </form>
                 </div>
               </div>
               <br />

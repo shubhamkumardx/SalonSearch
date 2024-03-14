@@ -10,6 +10,15 @@
   font-size: 20px;
   color: rgb(1, 41, 112);
 }
+.dro{
+font-size: 20px;
+margin-top: 19%;
+
+
+}
+
+
+
 
 .d1 {
   margin-left: 5%;
@@ -351,6 +360,7 @@
   font-weight: 500;
   border-radius: 5px;
   width: 200px;
+  height: 45px;
 
 }
 .ws{
@@ -369,6 +379,7 @@ margin-left: 530px;
   border-radius: 5px;
   margin-left: 1%;
   width: 200px;
+  height: 45px;
 }
 .btd{
   margin-left: 1%;
@@ -377,6 +388,7 @@ margin-left: 530px;
 .s6 {
   margin-left: 5%;
   background-color: green;
+  height: 45px;
 }
 .basic-details{
   height: 500px;
@@ -387,6 +399,10 @@ margin-left: 530px;
   /* overflow: scroll; */
   overflow-y: scroll;
 }
+.tdac{
+  background-color: red;
+  color: blueviolet;
+}
 
 .s6:hover {
   background-color: black;
@@ -395,6 +411,7 @@ margin-left: 530px;
 .s7 {
   background-color: rgb(13, 110, 253);
   margin-left: 48%;
+  height: 45px;
 }
 
 .s7:hover {

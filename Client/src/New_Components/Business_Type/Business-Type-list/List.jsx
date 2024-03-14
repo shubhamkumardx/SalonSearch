@@ -5,7 +5,7 @@ import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import Userimage from "../../../images/Userimage.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { Modal } from "bootstrap";
+import { Dropdown } from "react-bootstrap";
 
 function List(props) {
   const init = {
@@ -123,6 +123,9 @@ function List(props) {
   };
 
   // UPDATE
+
+
+
 
   const submitformchanges = async (e) => {
     e.preventDefault();
@@ -342,47 +345,29 @@ function List(props) {
           <div className="col-lg-4 d-flex justify-content-end ">
             <div className="d9 d-flex">
               <img src={Userimage} className="sizing1" />
-              <p
-                className="mt-3 d8 dropdown-toggle"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Admin
-              </p>
-
-              <ul class="dropdown-menu">
-                <Link className="nav-link" to="/Profile">
-                  <li>
-                    <a
-                      href="/"
-                      className="link logo1 d-flex dropdown-item"
-                      // onClick={handlelog}
-                    >
+              <Dropdown>
+                <Dropdown.Toggle
+                  as="p"
+                  variant="secondary"
+                  id="dropdown-basic"
+                  className="dro"
+                >
+                  Admin
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="#">
+                    {" "}
+                    <Link className="nav-link" to="/Profile">
+                      {" "}
                       Profile
-                    </a>
-                  </li>
-                </Link>
-                <li>
-                  {" "}
-                  <a
-                    href="/forgotpassword"
-                    className="link logo1 dropdown-item"
-                  >
-                    Forgot Password
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/"
-                    className="link logo1 d-flex dropdown-item"
-                    onClick={handlelog}
-                  >
+                    </Link>
+                  </Dropdown.Item>
+                  <Dropdown.Item href="#">Forgot Password</Dropdown.Item>
+                  <Dropdown.Item href="/" onClick={handlelog}>
                     Logout
-                  </a>
-                </li>
-              </ul>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </div>
@@ -887,7 +872,7 @@ function List(props) {
 
                     <div className="ws">
                       <Link className="nav-link" to="/BusinessTypeCreate">
-                        <button type="button" className="btn btn-primary    ">
+                        <button type="button" className="btn btn-primary">
                           Create New{" "}
                         </button>
                       </Link>
@@ -924,7 +909,7 @@ function List(props) {
                                       ? item.description
                                       : `${item.description.slice(0, 160)}...`}
                                   </td>
-                                  <td>
+                                  <td className="">
                                     {isActive === item.is_active
                                       ? "Active"
                                       : "Inactive"}
@@ -969,41 +954,6 @@ function List(props) {
               {/* PAGINATION */}
               <div className="pagination">{renderPageNumbers()}</div>
 
-              {/* <nav aria-label="Page navigation example " className="pagg ">
-                <ul class="pagination">
-                  <li class="page-item">
-                    <a class="page-link" href="#">
-                      Previous
-                    </a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">
-                      1
-                    </a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">
-                      2
-                    </a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">
-                      3
-                    </a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">
-                      Next
-                    </a>
-                  </li>
-                </ul>
-              </nav> */}
-              {/* {
-          pages.map((page, index) => {
-            return <button key={index} onClick={() => setCurrentPage(page)} className={page == currentPage ? 'active text-white fw-bold' : 'pag1 '} >{page}</button>
-          })
-
-        } */}
 
               <div className="hr_line"></div>
               <p className="p11 text-center mt-2">

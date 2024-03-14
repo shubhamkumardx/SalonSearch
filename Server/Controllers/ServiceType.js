@@ -1,9 +1,10 @@
 const db = require("../Database/config");
 const ServiceType = require("../Models/ServiceTypeModal");
 
-// CREATE BUSINESS TYPE
+// CREATE SERVICE TYPE
 module.exports.CreateServiceType = async (req, res) => {
     const { name, description, is_active } = req.body;
+
     try {
       const Type = await new ServiceType({ name, description, is_active });
       await Type.save();

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import Userimage from "../../../images/Userimage.jpg";
 import { Link } from "react-router-dom";
+import { Dropdown } from "react-bootstrap";
 
 function HairCreate(props) {
   const [active, IsActive] = useState(1);
@@ -29,47 +30,29 @@ function HairCreate(props) {
             <div className="col-lg-4 d-flex justify-content-end ">
               <div className="d9 d-flex">
                 <img src={Userimage} className="sizing1" />
-                <p
-                  className="mt-3 d8 dropdown-toggle"
-                  id="navbarDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+                <Dropdown>
+                <Dropdown.Toggle
+                  as="p"
+                  variant="secondary"
+                  id="dropdown-basic"
+                  className="dro"
                 >
                   Admin
-                </p>
-
-                <ul class="dropdown-menu">
-                <Link className="nav-link" to="/Profile">
-              <li>
-                  <a
-                    href="/"
-                    className="link logo1 d-flex dropdown-item"
-                    // onClick={handlelog}
-                  >
-                    Profile
-                  </a>
-                </li>
-                </Link>
-                  <li>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="#">
                     {" "}
-                    <a
-                      href="/forgotpassword"
-                      className="link logo1 dropdown-item"
-                    >
-                      Forgot Password
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/"
-                      className="link logo1 d-flex dropdown-item"
-                      onClick={handlelog}
-                    >
-                      Logout
-                    </a>
-                  </li>
-                </ul>
+                    <Link className="nav-link" to="/Profile">
+                      {" "}
+                      Profile
+                    </Link>
+                  </Dropdown.Item>
+                  <Dropdown.Item href="#">Forgot Password</Dropdown.Item>
+                  <Dropdown.Item href="/" onClick={handlelog}>
+                    Logout
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               </div>
             </div>
           </div>

@@ -3,12 +3,15 @@ import { useFetcher, useNavigate } from "react-router-dom";
 import Home from "../Pages/Home";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import Spinner from "./Spinner";
 
 function Login(props) {
+  
   const [formData, setFormData] = useState();
   const [User, setUser] = useState();
   const [Message, setMessage] = useState("");
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -24,20 +27,6 @@ function Login(props) {
   };
 
   const login = async (formData) => {
-    // const option = {
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(formData),
-    // };
-
-    // try {
-    //   const response = await axios.post("http://localhost:5000/login", formData);
-    //   console.log(response);
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
     const option = {
       method: "POST",
       headers: {
@@ -45,11 +34,8 @@ function Login(props) {
       },
       body: JSON.stringify(formData),
     };
-
-    const response = await fetch(
-      `http://localhost:5000/login`,
-      option
-    );
+    setIsLoading(true);
+    const response = await fetch(`http://localhost:5000/login`, option);
 
     const user = await response.json();
     console.log(user.user);
@@ -57,9 +43,9 @@ function Login(props) {
     if (response.ok) {
       toast.success("logged in successfully");
       navigate("/dashboard");
-      const UserDeatils = JSON.stringify(user)
-      sessionStorage.setItem("user", UserDeatils );
-  
+      const UserDeatils = JSON.stringify(user);
+      sessionStorage.setItem("user", UserDeatils);
+      setIsLoading(false)
     } else {
       setMessage("Something went wrong, please try again.");
     }
@@ -76,6 +62,7 @@ function Login(props) {
               <p className="lg4 text-secondary text-center">
                 Enter your Email & Password to login
               </p>
+              {isLoading ? <Spinner/> : login }
               <div className="form-group">
                 <label for="exampleInputEmail1" className="l7">
                   Email
@@ -89,7 +76,7 @@ function Login(props) {
                   name="email"
                 />
               </div>
-           
+
               <div className="form-group mt-3">
                 <label for="exampleInputPassword1" className="l7">
                   Password
@@ -102,8 +89,8 @@ function Login(props) {
                   name="password"
                 />
               </div>
-               <p className="text-danger">{User}</p>
-             
+              <p className="text-danger">{User}</p>
+
               <div className="form-group mt-2">
                 <button
                   type="button"

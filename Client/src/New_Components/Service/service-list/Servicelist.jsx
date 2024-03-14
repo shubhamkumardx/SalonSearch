@@ -4,6 +4,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import Userimage from "../../../images/Userimage.jpg";
 import { Link, useNavigate } from "react-router-dom";
+import { Dropdown } from "react-bootstrap";
 
 function Servicelist(props) {
   const [active, IsActive] = useState(1);
@@ -11,6 +12,8 @@ function Servicelist(props) {
   const handlelog = () => {
     sessionStorage.clear();
   };
+
+
   return (
     <div>
       <div className="App">
@@ -29,47 +32,31 @@ function Servicelist(props) {
           <div className="col-lg-4 d-flex justify-content-end ">
             <div className="d9 d-flex">
               <img src={Userimage} className="sizing1" />
-              <p
-                className="mt-3 d8 dropdown-toggle"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Admin
-              </p>
+             
 
-              <ul class="dropdown-menu">
-              <Link className="nav-link" to="/Profile">
-              <li>
-                  <a
-                    href="/"
-                    className="link logo1 d-flex dropdown-item"
-                    // onClick={handlelog}
-                  >
-                    Profile
-                  </a>
-                </li>
-                </Link>
-                <li>
-                  {" "}
-                  <a
-                    href="/forgotpassword"
-                    className="link logo1 dropdown-item"
-                  >
-                    Forgot Password
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/"
-                    className="link logo1 d-flex dropdown-item"
-                    onClick={handlelog}
-                  >
+              <Dropdown>
+                <Dropdown.Toggle
+                  as="p"
+                  variant="secondary"
+                  id="dropdown-basic"
+                  className="dro"
+                >
+                  Admin
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="#">
+                    {" "}
+                    <Link className="nav-link" to="/Profile">
+                      {" "}
+                      Profile
+                    </Link>
+                  </Dropdown.Item>
+                  <Dropdown.Item href="#">Forgot Password</Dropdown.Item>
+                  <Dropdown.Item href="/" onClick={handlelog}>
                     Logout
-                  </a>
-                </li>
-              </ul>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
 
              
             </div>
@@ -577,9 +564,7 @@ function Servicelist(props) {
              <button type="button" className="btn btn  s7 text-white ">
                Create New{" "}
              </button>
-             <button type="button" className="btn btn  s6 text-white">
-               Export
-             </button>
+         
            </div>
 
            <div className="container">
