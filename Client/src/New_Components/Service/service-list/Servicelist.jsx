@@ -1,21 +1,323 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import Userimage from "../../../images/Userimage.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
+import toast, { Toaster } from "react-hot-toast";
 
 function Servicelist(props) {
+  const init = {
+    name: "",
+    description: "",
+  };
+
   const [active, IsActive] = useState(1);
+  const [ListData, setListData] = useState([]);
+  const [Viewmore, setviewmore] = useState(false);
+  const [Data, setData] = useState([]);
+  const [formData, setFormData] = useState(init);
+  const [DeleteId, setDeleteId] = useState();
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOption, setSelectedOption] = useState("all");
+
+
+  const isActive = true;
+  const navigate = useNavigate();
 
   const handlelog = () => {
     sessionStorage.clear();
   };
 
+  const handleSearchh = (e) => {
+    const { value } = e.target;
+    setSearchText(value);
+  };
+
+  const filteredArray =
+    ListData?.filter((item) => {
+      return (
+        item.name && item.name.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }) || [];
+
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(filteredArray.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredArray.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const renderPageNumbers = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={
+            i === currentPage
+              ? "btn btn-secondary active text-white fw-bold"
+              : "btn btn-primary"
+          }
+        >
+          {i}
+        </button>
+      );
+    }
+    return pages;
+  };
+
+  const filteredData = selectedOption === "all"
+  ? currentItems
+  : ListData.filter((item) => {
+      if (selectedOption === "active") {
+        return item.is_active === true;
+      } else if (selectedOption === "inactive") {
+        return item.is_active === false;
+      }
+      return false;
+    });
+    console.log(filteredData);
+
+  // GET ALL LIST
+  const obj = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(),
+  };
+
+  const GetListData = async () => {
+    const response = await fetch(`http://localhost:5000/getservicelist`, obj);
+    if (!response.ok) {
+      console.log(` Error! Status: ${response.status}`);
+    }
+    const Data = await response.json();
+    setListData(Data);
+  };
+
+  useEffect(() => {
+    GetListData();
+  }, []);
+
+  // GET SINGLE DATA
+
+  const handlesub = (id) => {
+    GetBsData(id);
+  };
+
+  const GetBsData = async (id) => {
+    const response = await fetch(
+      `http://localhost:5000/getservicetype?_id=${id} `,
+      obj
+    );
+
+    if (response.ok) {
+      const tasks = await response.json();
+      setData(tasks);
+      console.log("Get Task  successfully");
+    } else {
+      console.log("Something went wrong");
+    }
+  };
+
+  // UPDATE
+
+  const submitformchanges = async (e) => {
+    e.preventDefault();
+    UpdateListInfo(formData);
+  };
+
+  const opt = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  };
+
+  const UpdateListInfo = async (formData) => {
+    const response = await fetch(
+      `http://localhost:5000/updateservicelist?_id=${Data._id}`,
+      opt
+    );
+    if (response.ok) {
+      toast.success("Service Updated successfully");
+      navigate("/Servicelist");
+      console.log("Service Updated successfully");
+    } else {
+      console.log("Something went wrong");
+    }
+  };
+
+  const submitdelete = async (e) => {
+    e.preventDefault();
+    DeleteType();
+  };
+
+  const option = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(),
+  };
+  const DeleteType = async () => {
+    const response = await fetch(
+      `http://localhost:5000/deleteservicetype?_id=${DeleteId}`,
+      option
+    );
+    if (response.ok) {
+      toast.success("Service Type Deleted successfully");
+      navigate("/Servicelist");
+      console.log("Service Type Deleted successfully");
+    } else {
+      console.log("Something went wrong");
+    }
+  };
 
   return (
     <div>
+      {/* EDIT MODAL */}
+
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content ">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Service Type
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body ">
+              <div className="container">
+                <form>
+                  <div class="form-group">
+                    <label for="exampleFormControlInput1">Name</label>
+                    <input
+                      type="name"
+                      class="form-control"
+                      id="exampleFormControlInput1"
+                      name="name"
+                      defaultValue={Data.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div class="form-group  mt-4">
+                    <label for="exampleFormControlTextarea1">Description</label>
+                    <textarea
+                      name="description"
+                      class="form-control"
+                      id="exampleFormControlTextarea1"
+                      rows="3"
+                      defaultValue={Data.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                    ></textarea>
+                  </div>
+
+                  <div class="form-check mt-3">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="checkbox"
+                      id="flexCheckChecked"
+                      checked={Data.is_active}
+                    />
+                    <label class="form-check-label" for="flexCheckChecked">
+                      Active Service Type
+                    </label>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={submitformchanges}
+                data-bs-dismiss="modal"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* DELETE MODAL */}
+
+      <div
+        class="modal fade"
+        id="exampleModal1"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">Are You Sure Want to Delete?</div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                onClick={submitdelete}
+                data-bs-dismiss="modal"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="App">
         <div className="row ">
           <div className="col-lg-8 text-start">
@@ -32,7 +334,6 @@ function Servicelist(props) {
           <div className="col-lg-4 d-flex justify-content-end ">
             <div className="d9 d-flex">
               <img src={Userimage} className="sizing1" />
-             
 
               <Dropdown>
                 <Dropdown.Toggle
@@ -57,36 +358,33 @@ function Servicelist(props) {
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
-
-             
             </div>
           </div>
         </div>
 
         <div className="row aq z2">
-        <div className="col-lg-2">
+          <div className="col-lg-2">
             <div className="container ">
               <div class="accordion accordion-flush" id="accordionFlushExample">
                 {/* ---------DASHBOARD---------- */}
 
-                <div 
-                 onClick={() => IsActive(1)}
-                 style={
-                   active === 1
-                     ? {
-                         borderRadius: "5px",
-                         
-                       }
-                     : { color: "rgb(56,87,143)" }
-                 }
-                > <Link className="nav-link" to="/dashboard">
-                   <p className="dash-bd mb-0  mt-3">Dashboard</p>
-                </Link>
-               
+                <div
+                  onClick={() => IsActive(1)}
+                  style={
+                    active === 1
+                      ? {
+                          borderRadius: "5px",
+                        }
+                      : { color: "rgb(56,87,143)" }
+                  }
+                >
+                  {" "}
+                  <Link className="nav-link" to="/dashboard">
+                    <p className="dash-bd mb-0  mt-3">Dashboard</p>
+                  </Link>
                 </div>
                 <hr className="mb-0"></hr>
 
-             
                 {/* -----------------BUSINESS TYPE----------- */}
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="flush-headingOne">
@@ -109,42 +407,40 @@ function Servicelist(props) {
                   >
                     <div class="accordion-body">
                       <ul className="list-group mt-1">
-
                         <Link className="nav-link" to="/BusinessTypeCreate">
-                        <li
-                          className="t5 mt-1"
-                          onClick={() => IsActive(2)}
-                          style={
-                            active === 2
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                      
-                          Create Business
-                        </li>
+                          <li
+                            className="t5 mt-1"
+                            onClick={() => IsActive(2)}
+                            style={
+                              active === 2
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            Create Business
+                          </li>
                         </Link>
                         <Link className="nav-link" to="/BusinessTypelist">
-                        <li
-                          className="t5 mt-3"
-                          onClick={() => IsActive(3)}
-                          style={
-                            active === 3
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Business Type list
-                        </li>
+                          <li
+                            className="t5 mt-3"
+                            onClick={() => IsActive(3)}
+                            style={
+                              active === 3
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Business Type list
+                          </li>
                         </Link>
                       </ul>
                     </div>
@@ -173,43 +469,42 @@ function Servicelist(props) {
                   >
                     <div class="accordion-body">
                       <ul className="list-group mt-1">
-
-                      <Link className="nav-link" to="/ServiceCreate">
-                        <li
-                          className="t5 mt-1"
-                          onClick={() => IsActive(4)}
-                          style={
-                            active === 4
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Create Service
-                        </li>
+                        <Link className="nav-link" to="/ServiceCreate">
+                          <li
+                            className="t5 mt-1"
+                            onClick={() => IsActive(4)}
+                            style={
+                              active === 4
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Create Service
+                          </li>
                         </Link>
 
                         <Link className="nav-link" to="/Servicelist">
-                        <li
-                          className="t5 mt-3"
-                          onClick={() => IsActive(5)}
-                          style={
-                            active === 5
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Service list
-                        </li>
+                          <li
+                            className="t5 mt-3"
+                            onClick={() => IsActive(5)}
+                            style={
+                              active === 5
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Service list
+                          </li>
                         </Link>
                       </ul>
                     </div>
@@ -239,43 +534,42 @@ function Servicelist(props) {
                   >
                     <div class="accordion-body">
                       <ul className="list-group mt-1">
-
-                      <Link className="nav-link" to="/HairTypeCreate">
-                        <li
-                          className="t5 mt-1"
-                          onClick={() => IsActive(6)}
-                          style={
-                            active === 6
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Create Hair-Type
-                        </li>
+                        <Link className="nav-link" to="/HairTypeCreate">
+                          <li
+                            className="t5 mt-1"
+                            onClick={() => IsActive(6)}
+                            style={
+                              active === 6
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Create Hair-Type
+                          </li>
                         </Link>
 
                         <Link className="nav-link" to="/HairTypeList">
-                        <li
-                          className="t5 mt-3"
-                          onClick={() => IsActive(7)}
-                          style={
-                            active === 7
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Hair-Type List
-                        </li>
+                          <li
+                            className="t5 mt-3"
+                            onClick={() => IsActive(7)}
+                            style={
+                              active === 7
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Hair-Type List
+                          </li>
                         </Link>
                       </ul>
                     </div>
@@ -304,46 +598,43 @@ function Servicelist(props) {
                   >
                     <div class="accordion-body">
                       <ul className="list-group mt-1">
-
-
-                      <Link className="nav-link" to="/SubadminCreate">
-                        <li
-                          className="t5 mt-1"
-                          onClick={() => IsActive(8)}
-                          style={
-                            active === 8
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Create Sub-Admin
-                        </li>
+                        <Link className="nav-link" to="/SubadminCreate">
+                          <li
+                            className="t5 mt-1"
+                            onClick={() => IsActive(8)}
+                            style={
+                              active === 8
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Create Sub-Admin
+                          </li>
                         </Link>
 
                         <Link className="nav-link" to="/SubadminList">
-                        <li
-                          className="t5 mt-3"
-                          onClick={() => IsActive(9)}
-                          style={
-                            active === 9
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Sub-Admin List
-                        </li>
+                          <li
+                            className="t5 mt-3"
+                            onClick={() => IsActive(9)}
+                            style={
+                              active === 9
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Sub-Admin List
+                          </li>
                         </Link>
-
                       </ul>
                     </div>
                   </div>
@@ -371,24 +662,23 @@ function Servicelist(props) {
                   >
                     <div class="accordion-body">
                       <ul className="list-group mt-1">
-
-                      <Link className="nav-link" to="/Userslist">
-                        <li
-                          className="t5 mt-1"
-                          onClick={() => IsActive(10)}
-                          style={
-                            active === 10
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Users List
-                        </li>
+                        <Link className="nav-link" to="/Userslist">
+                          <li
+                            className="t5 mt-1"
+                            onClick={() => IsActive(10)}
+                            style={
+                              active === 10
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Users List
+                          </li>
                         </Link>
                       </ul>
                     </div>
@@ -417,43 +707,42 @@ function Servicelist(props) {
                   >
                     <div class="accordion-body">
                       <ul className="list-group mt-1">
-
-                      <Link className="nav-link" to="/BusinessCreate">
-                        <li
-                          className="t5 mt-1"
-                          onClick={() => IsActive(11)}
-                          style={
-                            active === 11
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Create Business
-                        </li>
+                        <Link className="nav-link" to="/BusinessCreate">
+                          <li
+                            className="t5 mt-1"
+                            onClick={() => IsActive(11)}
+                            style={
+                              active === 11
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Create Business
+                          </li>
                         </Link>
 
                         <Link className="nav-link" to="/BusinessList">
-                        <li
-                          className="t5 mt-3"
-                          onClick={() => IsActive(12)}
-                          style={
-                            active === 12
-                              ? {
-                                  backgroundColor: "rgb(224,243,255)",
-                                  borderRadius: "5px",
-                                  border: "5px solid rgb(224,243,255)",
-                                }
-                              : { color: "rgb(56,87,143)" }
-                          }
-                        >
-                          {/* <MdCompareArrows className="t1" /> */}
-                          Business List
-                        </li>
+                          <li
+                            className="t5 mt-3"
+                            onClick={() => IsActive(12)}
+                            style={
+                              active === 12
+                                ? {
+                                    backgroundColor: "rgb(224,243,255)",
+                                    borderRadius: "5px",
+                                    border: "5px solid rgb(224,243,255)",
+                                  }
+                                : { color: "rgb(56,87,143)" }
+                            }
+                          >
+                            {/* <MdCompareArrows className="t1" /> */}
+                            Business List
+                          </li>
                         </Link>
                       </ul>
                     </div>
@@ -536,170 +825,130 @@ function Servicelist(props) {
                   </div>
                 </div>
               </div>
-
-          
             </div>
           </div>
 
           <div className="col-lg-10 t4">
+            <div>
+              <div className="container">
+                <p className="text-start  a2 mt-1 "> Service List </p>
 
-         <div>
-       <div className="container">
-         <p className="text-start  a2 mt-1 "> Service List </p>
-    
-         <div className="mkl">
-           <p className="oppo"> Filters</p>
-           <div className="d-flex mt-2">
-             <input type="text" className="s4" placeholder="Search by Name" />
+                <div className="mkl">
+                  <p className="oppo"> Filters</p>
+                  <div className="d-flex mt-2">
+                    <input
+                      type="text"
+                      className="s4"
+                      placeholder="Search by Name"
+                      onChange={handleSearchh}
+                    />
 
-             <select name="language" id="language" className="s8 text-secondary">
-              <option value="">Active</option>
-              <option value="">Inactive</option>
+                    <select
+                      name="language"
+                      id="language"
+                      value={selectedOption}
+                      className="s8 text-secondary"
+                      onChange={(e) => setSelectedOption(e.target.value)}
+                    >
+                      <option value="all" selected>
+                        Status
+                      </option>
+                      <option value="active">Active</option>
 
-              <option value="" selected>
-                 Status
-               </option>
-           </select>
+                      <option value="inactive">Inactive</option>
+                    </select>
 
-             <button type="button" className="btn btn  s7 text-white ">
-               Create New{" "}
-             </button>
-         
-           </div>
+                    <div className="ws">
+                      <Link className="nav-link" to="/ServiceCreate">
+                        <button type="button" className="btn btn-primary ss77">
+                          Create New{" "}
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
 
-           <div className="container">
-             <table className="mt-5 table">
-               <thead>
-                 <tr className="s11">
-                   <th>id</th>
-                   <th>Name</th>
-                   <th>Description</th>
-                   <th>Status</th>
-                  <th>Action</th>
-                </tr>
-               </thead>
-               <tbody>
-               <tr>
-                   <td>12</td>
-                   <td>shubham</td>
-                <td>dsadd</td>
-                  <td>sada</td>
-                  <td>
-                    <button type="button" class="btn btn-success">
-                      Edit
-                     </button> <br/>
-                     <button type="button" className="btn btn-danger mt-2">
-                       Delete
-                     </button>
-                   </td>
-               </tr>
-                <tr>
-                  <td>12</td>
-                 <td>shubham</td>
-                <td>dsadd</td>
-                <td>sada</td>
-                <td>
-                  <button type="button" class="btn btn-success">
-                      Edit
-                     </button> <br/>
-                    <button type="button" className="btn btn-danger mt-2">
-                      Delete
-                    </button>
-                 </td>
-                </tr>
-                <tr>
-                  <td>12</td>
-                <td>shubham</td>
-                  <td>dsadd</td>
-                 <td>sada</td>
-                  <td>
-                    <button type="button" class="btn btn-success">
-                      Edit
-                     </button> <br/>
-                     <button type="button" className="btn btn-danger mt-2">
-                      Delete
-                    </button>
-                   </td>
-                </tr>
-              </tbody>
-            </table>
+                  <div className="container">
+                    <table className="mt-5 table">
+                      <thead>
+                        <tr className="s11">
+                          <th>Name</th>
+                          <th>Description</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredArray.length === 0 || filteredData.length === 0  ? (
+                          <tr>
+                            <td></td>
+                            <td>
+                              <h4 className="text-center">NO DATA FOUND</h4>
+                            </td>
+                            <td></td>
+                          </tr>
+                        ) : (
+                          filteredData.map((item) => {
+                            return (
+                              <>
+                                <tr>
+                                  <td className="">{item.name}</td>
+                                  <td className="">
+                                    {Viewmore
+                                      ? item.description
+                                      : `${item.description.slice(0, 160)}...`}
+                                  </td>
+                                  <td className="">
+                                    {isActive === item.is_active
+                                      ? "Active"
+                                      : "Inactive"}
+                                  </td>
+                                  <td className="">
+                                    <div className="">
+                                      <button
+                                        type="button"
+                                        class="btn btn-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal"
+                                        onClick={() => handlesub(item._id)}
+                                      >
+                                        Edit
+                                      </button>
+
+                                      <br />
+                                      <button
+                                        type="button"
+                                        className="btn btn-danger mt-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal1"
+                                        onClick={() => setDeleteId(item._id)}
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <br />
+                <br />
+              </div>
+              {/* PAGINATION */}
+              <div className="pagination">{renderPageNumbers()}</div>
+
+              <div className="hr_line"></div>
+              <p className="p11 text-center mt-2">
+                {" "}
+                Copyright <span className="p12">Saloon Finder.</span> All Rights
+                Reserved
+              </p>
+            </div>
           </div>
-        </div>
-  <br />
-         <br />
-       </div>
-      <div className="hr_line"></div>
-       <p className="p11 text-center mt-2">
-        {" "}
-         Copyright <span className="p12">Saloon Finder.</span> All Rights
-         Reserved
-     </p>
-     </div>
-
-          </div>
-
-          {/* <div className="col-lg-10 active t4">
-            {active == 1 && (
-              <>
-                <Dashboard />
-              </>
-            )}
-            {active == 2 && (
-              <>
-                <Create />{" "}
-              </>
-            )}
-            {active == 3 && (
-              <>
-                <List />
-              </>
-            )}
-            {active == 4 && (
-              <>
-                <ServiveCreate />
-              </>
-            )}
-            {active == 5 && (
-              <>
-                <Servicelist />
-              </>
-            )}
-            {active == 6 && (
-              <>
-                <HairCreate />
-              </>
-            )}
-            {active == 7 && (
-              <>
-                <HairList />
-              </>
-            )}
-            {active == 8 && (
-              <>
-                <AdminCreate />
-              </>
-            )}
-            {active == 9 && (
-              <>
-                <AdminList />
-              </>
-            )}
-            {active == 10 && (
-              <>
-                <UserList />
-              </>
-            )}
-            {active == 11 && (
-              <>
-                <BusinessCreate />
-              </>
-            )}
-            {active == 12 && (
-              <>
-                <BusinessList />
-              </>
-            )}
-          </div> */}
         </div>
       </div>
     </div>

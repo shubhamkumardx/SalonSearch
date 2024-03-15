@@ -413,6 +413,11 @@ margin-left: 530px;
   margin-left: 48%;
   height: 45px;
 }
+.ss77 {
+  /* background-color: rgb(13, 110, 253); */
+
+  height: 45px;
+}
 
 .s7:hover {
   background-color: rgb(13, 110, 253);
@@ -613,11 +618,17 @@ margin-left: 82%;
 
 .l8 {
   font-size: 32px;
+  color: rgb(128,0,0);
+}
+.inpt{
+  font-size: 18px;
+  font-weight: 400;
+
 }
 
 .log11 {
   font-size: 18px;
-  color: black;
+  /* color: black; */
   font-weight: 600;
 }
 

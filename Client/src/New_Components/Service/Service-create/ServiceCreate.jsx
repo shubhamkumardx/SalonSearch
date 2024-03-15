@@ -674,7 +674,7 @@ function Servicecreate(props) {
                   <div className="container">
                     <form onSubmit={handleSubmittt}>
                       <div class="form-group">
-                        <label for="exampleFormControlInput1">Name</label>
+                        <label for="exampleFormControlInput1" className="inpt">Name</label>
                         <input
                           type="name"
                           class="form-control"
@@ -692,7 +692,7 @@ function Servicecreate(props) {
                       </div>
 
                       <div class="form-group  mt-4">
-                        <label for="exampleFormControlTextarea1">
+                        <label for="exampleFormControlTextarea1" className="inpt">
                           Description
                         </label>
                         <textarea

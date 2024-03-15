@@ -9,11 +9,12 @@ const ServiceType = require("../Controllers/ServiceType");
 router.use(cors({origin:'http://localhost:3000'}))
 
 
-//User routes
+//USER ROUTES
 router.post('/login',cors(),urlencodedParser, Usercontoller.LoginUser)
 router.put('/Updateuser/:_id',cors(),urlencodedParser, Usercontoller.UpdateUser)
 
-//Business type
+
+// BUSINESS TYPE
 router.post('/create',cors(),urlencodedParser, BusinessTypeController.CreateType)
 router.get('/getbusinesslist',cors(),urlencodedParser, BusinessTypeController.GetAllList)
 router.put('/updatelist',cors(),urlencodedParser, BusinessTypeController.UpdateBusinessList)
@@ -22,5 +23,14 @@ router.delete('/deletebusinesstype',cors(), urlencodedParser, BusinessTypeContro
 
 // SERVICE TYPE 
 router.post('/servicecreate',cors(),urlencodedParser, ServiceType.CreateServiceType)
+router.get('/getservicelist',cors(),urlencodedParser, ServiceType.ServiceList)
+router.put('/updateservicelist',cors(),urlencodedParser, ServiceType.UpdateServiceList)
+router.get('/getservicetype',cors(),urlencodedParser, ServiceType.GetServiceUserType)
+router.delete('/deleteservicetype',cors(), urlencodedParser, ServiceType.DeleteServiceType)
+
+
+
+
+
 
 module.exports = router;

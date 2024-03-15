@@ -1,207 +1,167 @@
-import React, { useState } from "react";
-import Home from "../../Pages/Home";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
-import Userimage from "../../images/Userimage.jpg";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
+import { BsCurrencyDollar } from 'react-icons/bs'
+import { IoMdContacts } from 'react-icons/io'
+import Chart from "react-apexcharts";
+import Charts from "chart.js/auto";
 import { Bar } from "react-chartjs-2";
 import { Line } from "react-chartjs-2";
 import { Pie } from "react-chartjs-2";
-import { AiOutlineShoppingCart } from "react-icons/ai";
-import { BsCurrencyDollar } from "react-icons/bs";
-import { IoMdContacts } from "react-icons/io";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+import Userimage from "../images/Userimage.jpg";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 
-// import {CategoryScale} from 'chart.js'; 
-// Chart.register(CategoryScale);
-
-function Dashboard(props) {
-  const [active, IsActive] = useState(1);
+function Dashboard() {
+    const [Getdata, setGetdata] = useState({});
+    const userToken = sessionStorage.getItem('user');
+    const [active, IsActive] = useState(1);
 
   const handlelog = () => {
     sessionStorage.clear();
   };
 
-  const [Getdata, setGetdata] = useState({});
-  const userToken = sessionStorage.getItem("user");
-
-  const option = {
-    method: "GET",
-    headers: {
-      Authorization: userToken,
-    },
-    body: JSON.stringify(),
-  };
-  const Dashboardapi = async () => {
-    const response = await fetch(
-      `https://qb.flitsync.com/api/dashboard.php`,
-      option
-    );
-
-    if (!response.ok) {
-      console.log(` Error! Status: ${response.status}`);
+    const option = {
+        method: "GET",
+        headers: {
+            "Authorization": userToken,
+        },
+        body: JSON.stringify()  
     }
-    const apidatas = await response.json();
-    setGetdata(apidatas);
-  };
+    const Dashboardapi = async () => {
+        const response = await fetch(`https://qb.flitsync.com/api/dashboard.php`, option);
 
-  const labelsess = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "july",
-  ];
-  const datas = {
-    labels: labelsess,
-    datasets: [
-      {
-        label: "Sales",
-        //  backgroundColor: "rgb(127,137,244)",
-        borderColor: "rgb(127,137,244)",
-        backgroundColor: "rgb(222,225,247)",
-        borderWidth: 2,
-        data: [0, 10, 5, 10, 20, 20, 40],
-        fill: true,
-      },
-      {
-        label: "Revenue",
-        // backgroundColor: "rgb(46,202,106)",
-        borderColor: "rgb(46,202,106)",
-        backgroundColor: "rgb(230,243,243)",
-        borderWidth: 2,
-        data: [30, 24, 20, 33, 30, 40, 55],
-        fill: true,
-      },
-      {
-        label: "Customers",
-        // backgroundColor: "rgb(255,161,113)",
-        borderColor: "rgb(255,119,64)",
-        backgroundColor: "rgb(242,217,198)",
-        borderWidth: 2,
-        data: [45, 54, 60, 45, 58, 58, 68],
-        fill: true,
-      },
-    ],
-  };
-
-  const labels = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "july",
-  ];
-  const data = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Bar Chart",
-        backgroundColor: [
-          "rgb(255,224,230)",
-          "rgb(255,236,217)",
-          "rgb(255,245,221)",
-          "rgb(219,242,242)",
-          "rgb(215,236,251)",
-          "rgb(235,224,255)",
-          "rgb(244,245,245)",
+        if (!response.ok) {
+            console.log(` Error! Status: ${response.status}`);
+        }
+        const apidatas = await response.json();
+        setGetdata(apidatas)
+    }
+  
+    const labelsess = ["January", "February", "March", "April", "May", "June", "july"];
+    const datas = {
+        labels: labelsess,
+        datasets: [
+            {
+                label: "Sales",
+                //  backgroundColor: "rgb(127,137,244)",
+                borderColor: "rgb(127,137,244)",
+                 backgroundColor: "rgb(222,225,247)",
+                borderWidth: 2,
+                data: [0, 10, 5, 10, 20, 20, 40],
+                fill: true,
+                
+                
+               
+            },
+            {
+                label: "Revenue",
+                // backgroundColor: "rgb(46,202,106)",
+                borderColor: "rgb(46,202,106)",
+                backgroundColor:"rgb(230,243,243)",
+                borderWidth: 2,
+                data: [30, 24, 20, 33, 30, 40, 55],
+                 fill: true,
+               
+            },
+            {
+                label: "Customers",
+                // backgroundColor: "rgb(255,161,113)",
+                borderColor: "rgb(255,119,64)",
+                 backgroundColor:"rgb(242,217,198)",
+                borderWidth: 2,
+                data: [45, 54, 60, 45, 58, 58,68],
+                  fill: true,
+            },
+         
         ],
-        borderColor: [
-          "rgb(255,196,209)",
-          "rgb(255,205,157)",
-          "rgb(255,218,126)",
-          "rgb(153,219,219)",
-          "rgb(183,221,248)",
-          "rgb(190,158,255)",
-          "rgb(225,227,228)",
+        
+    };
+
+    const labels = ["January", "February", "March", "April", "May", "June", "july"];
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: "Bar Chart",
+                backgroundColor: ["rgb(255,224,230)", "rgb(255,236,217)", "rgb(255,245,221)", "rgb(219,242,242)", "rgb(215,236,251)", "rgb(235,224,255)", "rgb(244,245,245)"],
+                borderColor: ["rgb(255,196,209)", "rgb(255,205,157)", "rgb(255,218,126)", "rgb(153,219,219)", "rgb(183,221,248)", "rgb(190,158,255)", "rgb(225,227,228)"],
+                borderWidth: 2,
+                data: [22, 30, 7, 27, 20, 30, 40],
+            },
         ],
-        borderWidth: 2,
-        data: [22, 30, 7, 27, 20, 30, 40],
-      },
-    ],
-  };
+    };
 
-  const labelss = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "july",
-  ];
-  const dataa = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Line Chart",
-        backgroundColor: "rgb(75,192,192)",
-        borderColor: "rgb(75,192,192)",
-        borderWidth: 2,
-        data: [0, 10, 5, 2, 20, 30, 45],
-      },
-    ],
-  };
-
-  const labelses = ["blue", "yellow", "pink"];
-  const dataas = {
-    labels: labelses,
-    datasets: [
-      {
-        label: "Pie Chart",
-        backgroundColor: [
-          "rgb(54,162,235)",
-          "rgb(255,205,86)",
-          "rgb(255,99,132)",
+    const labelss = ["January", "February", "March", "April", "May", "June", "july"];
+    const dataa = {
+        labels: labels,
+        datasets: [
+            {
+                label: "Line Chart",
+                backgroundColor: "rgb(75,192,192)",
+                borderColor: "rgb(75,192,192)",
+                borderWidth: 2,
+                data: [0, 10, 5, 2, 20, 30, 45],
+               
+            },
+         
         ],
-        borderColor: "white",
-        borderWidth: 2,
-        data: [13, 24, 57],
-      },
-    ],
-  };
+        
+    };
 
-  const dataass = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "Dataset 1",
-        data: [10, 20, 30, 50, 70, 90, 34],
-        backgroundColor: "rgb(255,99,132)",
-      },
-      {
-        label: "Dataset 2",
-        data: [20, 30, 40, 65, -23, 45, 12],
-        backgroundColor: "rgb(54,162,235)",
-      },
-      {
-        label: "Dataset 3",
-        data: [-32, 30, 40, 34, 34, 9, 54],
-        backgroundColor: "rgb(255,205,86)",
-      },
-    ],
-  };
+    const labelses = ["blue", "yellow", "pink"];
+    const dataas = {
+        labels: labelses,
+        datasets: [
+            {
+                label: "Pie Chart",
+                backgroundColor: ["rgb(54,162,235)", "rgb(255,205,86)", "rgb(255,99,132)"],
+                borderColor: "white",
+                borderWidth: 2,
+                data: [13, 24, 57],
+            },
+        ],
+    };
 
-  const options = {
-    scales: {
-      x: {
-        stacked: true,
-      },
-      y: {
-        beginAtZero: true,
-        stacked: true,
-      },
-    },
-  };
+    const dataass = {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [
+            {
+                label: 'Dataset 1',
+                data: [10, 20, 30, 50, 70, 90, 34],
+                backgroundColor: 'rgb(255,99,132)',
+            },
+            {
+                label: 'Dataset 2',
+                data: [20, 30, 40, 65, -23, 45, 12],
+                backgroundColor: 'rgb(54,162,235)',
+            },
+            {
+                label: 'Dataset 3',
+                data: [-32, 30, 40, 34, 34, 9, 54],
+                backgroundColor: 'rgb(255,205,86)',
+            },
 
-  return (
-    <div className="">
-      <div className="App">
+        ],
+    };
+
+    const options = {
+        scales: {
+            x: {
+                stacked: true,
+            },
+            y: {
+                beginAtZero: true,
+                stacked: true,
+            },
+        },
+    };
+
+    return (
+        <div>
+        <div className="App">
         <div className="row">
           <div className="col-lg-8 text-start">
             <div className="d-flex mt-2">
@@ -1011,8 +971,7 @@ function Dashboard(props) {
           </div>
         </div>
       </div>
-    </div>
-  );
+        </div>
+    );
 }
-
 export default Dashboard;

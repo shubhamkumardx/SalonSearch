@@ -9,11 +9,8 @@ import { SiTemporal } from "react-icons/si";
 import { TbReportSearch } from "react-icons/tb";
 import { MdCompareArrows } from "react-icons/md";
 import { useState } from "react";
-import Dashboard from "../Components/Dashboard";
-import SalesReport from "../Components/SalesReport";
-import Comparison from "../Components/Comparison";
-import ItemReport from "../Components/ItemReport";
-import CogsReport from "../Components/CogsReport";
+
+
 import Create from "../New_Components/Business_Type/Create-Business-Type/Create";
 import List from "../New_Components/Business_Type/Business-Type-list/List";
 import ServiveCreate from "../New_Components/Service/Service-create/ServiceCreate";

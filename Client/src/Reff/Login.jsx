@@ -4,9 +4,9 @@ import Home from "../Pages/Home";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import Spinner from "./Spinner";
+import { Link } from "react-router-dom";
 
 function Login(props) {
-  
   const [formData, setFormData] = useState();
   const [User, setUser] = useState();
   const [Message, setMessage] = useState("");
@@ -45,7 +45,7 @@ function Login(props) {
       navigate("/dashboard");
       const UserDeatils = JSON.stringify(user);
       sessionStorage.setItem("user", UserDeatils);
-      setIsLoading(false)
+      setIsLoading(false);
     } else {
       setMessage("Something went wrong, please try again.");
     }
@@ -62,7 +62,7 @@ function Login(props) {
               <p className="lg4 text-secondary text-center">
                 Enter your Email & Password to login
               </p>
-              {isLoading ? <Spinner/> : login }
+              {isLoading ? <Spinner /> : login}
               <div className="form-group">
                 <label for="exampleInputEmail1" className="l7">
                   Email
@@ -104,7 +104,9 @@ function Login(props) {
               {/* <div className="message">{Message ? <p>{Message}</p> : null}</div> */}
               <p className="card-text mt-2 text-center">
                 <a href="#" className="l6">
-                  Forgot password?
+                  <Link className="nav-link" to="/forgotpassword">
+                    Forgot password?
+                  </Link>
                 </a>
               </p>
             </form>

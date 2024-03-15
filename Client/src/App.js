@@ -10,16 +10,12 @@ import "./index.css";
 
 import { useEffect, useState } from "react";
 
-import SalesReport from "./Components/SalesReport";
-import Comparison from "./Components/Comparison";
-import ItemReport from "./Components/ItemReport";
-import CogsReport from "./Components/CogsReport";
-import Login from "./Components/Login";
+import Login from "./Reff/Login";
 import Home from "./Pages/Home";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import PageNotFound from "./Pages/PageNotFound";
 import toast, { Toaster } from "react-hot-toast";
-import Forgotpassword from "./Components/Forgotpassword";
+import Forgotpassword from "./Reff/Forgotpassword";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import Create from "./New_Components/Business_Type/Create-Business-Type/Create";
 import List from "./New_Components/Business_Type/Business-Type-list/List";
@@ -32,8 +28,9 @@ import AdminList from "./New_Components/Admin/AdminList/AdminList";
 import UserList from "./New_Components/Users/UserList";
 import BusinessCreate from "./New_Components/Business/BusinessCreate/BusinessCreate";
 import BusinessList from "./New_Components/Business/BusinessList/BusinessList";
-import Dashboard from "./New_Components/Dashboards/Dashboard";
+import Dashboard from "./Reff/Dashboard";
 import Profile from "./New_Components/Profile/Profile";
+import PasswordChange from "./Reff/PasswordChange";
 
 function App() {
   return (
@@ -61,14 +58,8 @@ function App() {
           }
         ></Route>
 
-        <Route
-          path="/forgotpassword"
-          element={
-            <ProtectedRoute>
-              <Forgotpassword />
-            </ProtectedRoute>
-          }
-        ></Route>
+        <Route path="/forgotpassword" element={<Forgotpassword />}></Route>
+        <Route path="/passwordchange" element={<PasswordChange />}></Route>
         <Route
           path="/BusinessTypeCreate"
           element={

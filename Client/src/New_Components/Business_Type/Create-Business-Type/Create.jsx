@@ -82,11 +82,13 @@ function Create(props) {
     if (response.ok) {
       toast.success("Created successfully");
       console.log("Created successfully");
-      setFormData({
-        name: "",
-        description: "",
-        checkbox: false,
-      });
+      // setFormData({
+      //   name: "",
+      //   description: "",
+      //   checkbox: false,
+      // });
+      setName("");
+      setDescription("");
     } else {
       console.log("Something went wrong");
     }
@@ -666,7 +668,7 @@ function Create(props) {
 
                   <form>
                     <div class="form-group">
-                      <label for="exampleFormControlInput1">Name</label>
+                      <label for="exampleFormControlInput1" className=" inpt">Name</label>
                       <input
                         type="name"
                         class="form-control"
@@ -684,7 +686,7 @@ function Create(props) {
                     </div>
 
                     <div class="form-group  mt-4">
-                      <label for="exampleFormControlTextarea1">
+                      <label for="exampleFormControlTextarea1" className="inpt">
                         Description
                       </label>
                       <textarea

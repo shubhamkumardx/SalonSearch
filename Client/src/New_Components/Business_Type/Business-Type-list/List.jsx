@@ -49,13 +49,17 @@ function List(props) {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredArray.slice(startIndex, endIndex);
 
-  const filteredData =
-    selectedOption === "all"
-      ? currentItems
-      : ListData.filter(
-          (item) => item.is_active === (selectedOption === "active")
-        );
-  console.log(filteredData);
+  const filteredData = selectedOption === "all"
+  ? currentItems
+  : ListData.filter((item) => {
+      if (selectedOption === "active") {
+        return item.is_active === true;
+      } else if (selectedOption === "inactive") {
+        return item.is_active === false;
+      }
+      return false;
+    });
+    console.log(filteredData);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -123,8 +127,6 @@ function List(props) {
   };
 
   // UPDATE
-
-
 
 
   const submitformchanges = async (e) => {
@@ -890,7 +892,7 @@ function List(props) {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredArray.length === 0 ? (
+                        {filteredArray.length === 0  || filteredData.length === 0 ? (
                           <tr>
                             <td></td>
                             <td>
